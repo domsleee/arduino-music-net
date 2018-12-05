@@ -1,6 +1,9 @@
 //**************************************************
 //
 // Arduino UNO Music Player
+// Run on server (UNO)
+//
+// Dom Slee, 2018
 //
 // Nick Shvelidze, 2013
 //
@@ -23,9 +26,6 @@ void setup() {
   pt.tune_initchan (5);
   pt.tune_initchan (6);
   pt.tune_initchan (7);
-  pt.tune_initchan (8);
-  pt.tune_initchan (9);
-  pt.tune_initchan (10);
 }
 
 void loop () {
