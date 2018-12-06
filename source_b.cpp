@@ -14,14 +14,22 @@
 
 
 #include "Playtune.h"
+#include "SquareSync.hpp"
+
+#define PIN_IN  9
+#define PIN_OUT 14
+#define DELAY_MS 10
+
+typedef unsigned int uint;
 
 !!MELODY!!
 
 Playtune pt;
-
-int val;
+SquareSync s(PIN_IN, PIN_OUT, pt);
 
 void setup() {
+  Serial.begin(9600);
+
   // Enable pins
   pt.tune_initchan(4);
   pt.tune_initchan(5);
@@ -29,7 +37,11 @@ void setup() {
   pt.tune_initchan(7);
 }
 
-void loop () {
-  pt.tune_playscore (score);  /* start playing */
+void loop() {
+  s.sync_slave();
+  while (true); //shutup
+  pt.tune_playscore(score);  /* start playing */
   while (pt.tune_playing) ;   /* wait here until playing stops */
+  pt.tune_delay(100);
 }
+

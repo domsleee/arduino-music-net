@@ -22,3 +22,14 @@ This will make a directory with the sketch in it, just open with Arduino IDE and
 ## Uses libraries from LenShustek
 PlayTune from https://github.com/LenShustek/arduino-playtune   
 MidiTones from https://github.com/LenShustek/miditones
+
+
+
+
+# HI
+You probably want to do this
+~~~bash
+arduino core update-index
+arduino core install arduino:avr
+~~~
+
