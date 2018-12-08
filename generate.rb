@@ -4,7 +4,7 @@ exit 0 if ARGV.length < 1
 
 boards = {
     "a" => {"port" => "/dev/cu.usbserial-A9M9DV3R", "fqbn" => "arduino:avr:pro"},
-    "b" => {"port" => "/dev/cu.usbmodem347", "fqbn" => "arduino:avr:micro" }
+    "b" => {"port" => "/dev/cu.usbmodem351", "fqbn" => "arduino:avr:micro" }
 }
 
 file = ARGV[0]
