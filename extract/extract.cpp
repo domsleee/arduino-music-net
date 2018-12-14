@@ -30,17 +30,17 @@ int main(int argc, char ** argv) {
     exit(1);
   }
 
-  vector<int> chan_dist;
+  vector<int> tone_dist;
   vector<string> out_files;
   for (int i = 2; i < argc; i++) {
     string out = string(argv[i++]);
     out_files.push_back(out);
     int num_tones = atoi(argv[i]);
-    chan_dist.push_back(num_tones);
+    tone_dist.push_back(num_tones);
   }
   int num_chans = out_files.size();
   vector<byte> score = read_score(argv[1]);
-  Out out(chan_dist);
+  Out out(tone_dist);
   extract(score, out);
 
   for (int i = 0; i < num_chans; i++) {

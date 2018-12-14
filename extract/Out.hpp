@@ -9,9 +9,9 @@ typedef unsigned char byte;
 
 class Out {
   vector<vector<byte> > chans;
-  vector<int> chan_dist;
+  vector<int> tone_dist;
 public:
-  Out(vector<int> &chan_dist); // a distribution of channels, e.g. {3,4}
+  Out(vector<int> &tone_dist); // a distribution of tones, e.g. {3,4}
   void all(byte b);
   void chan(int chan, byte b, bool skip_processing=false);
   vector<byte>& get_chan_data(int chan);

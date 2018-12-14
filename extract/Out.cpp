@@ -1,8 +1,8 @@
 #include "Out.hpp"
 
-Out::Out(vector<int> &chan_dists) {
-  this->chan_dist.assign(chan_dists.begin(), chan_dists.end());
-  this->chans.resize(chan_dist.size());
+Out::Out(vector<int> &tone_dist) {
+  this->tone_dist.assign(tone_dist.begin(), tone_dist.end());
+  this->chans.resize(tone_dist.size());
 }
 
 void Out::all(byte b) {
@@ -14,7 +14,7 @@ void Out::all(byte b) {
 
 void Out::chan(int chan, byte b, bool skip_processing) {
   for (int i = 0; i < this->chans.size(); i++) {
-    int v = this->chan_dist[i];
+    int v = this->tone_dist[i];
     if (chan < v) {
       // 0x0f is where the channel is.
       byte nb = skip_processing ? b : ((b & (~0x0F)) | chan);
@@ -40,7 +40,7 @@ int Out::get_chan_ntones(int chan) {
     printf("FATAL: Attempt to access channel: %d in get_chan_ntones\n", chan);
     exit(1);
   }
-  return this->chan_dist[chan];
+  return this->tone_dist[chan];
 }
 
 int Out::get_nchans() {
