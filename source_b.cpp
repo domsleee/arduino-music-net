@@ -39,7 +39,7 @@ void setup() {
 
 void loop() {
   s.sync_slave();
-  while (true); //shutup
+  //while (true); //shutup
   pt.tune_playscore(score);  /* start playing */
   while (pt.tune_playing) ;   /* wait here until playing stops */
   pt.tune_delay(100);

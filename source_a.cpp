@@ -39,7 +39,7 @@ void setup() {
 
 void loop() {
   s.sync_master();
-  while (true); //shutup
+  //while (true); //shutup
   pt.tune_playscore (score);
   while (pt.tune_playing);
 }
