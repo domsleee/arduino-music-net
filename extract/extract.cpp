@@ -25,21 +25,26 @@ void extract(vector<byte> &score, Out &out);
 void tune_go(vector<byte> &score, int score_start, Out &out, int volume_present);
 
 int main(int argc, char ** argv) {
-  if (argc != 2) {
-    printf("Usage: %s <input>\n", argv[0]);
+  if (argc < 4) {
+    printf("Usage: %s <input> (<out> <num_chans>)+\n", argv[0]);
     exit(1);
   }
+
+  vector<int> chan_dist;
+  vector<string> out_files;
+  for (int i = 2; i < argc; i++) {
+    string out = string(argv[i++]);
+    out_files.push_back(out);
+    int num_tones = atoi(argv[i]);
+    chan_dist.push_back(num_tones);
+  }
+  int num_chans = out_files.size();
   vector<byte> score = read_score(argv[1]);
-  int c_dist[] = {4, 3};
-  vector<int> chan_dist(c_dist, c_dist+sizeof(c_dist)/sizeof(int));
   Out out(chan_dist);
   extract(score, out);
 
-  for (int i = 0; i < out.get_nchans(); i++) {
-    char c = 'a'+i;
-    string s(1, c);
-    string filename = s + ".txt";
-    print_chan(filename, out.get_chan_ntones(i), out.get_chan_data(i));
+  for (int i = 0; i < num_chans; i++) {
+    print_chan(out_files[i], out.get_chan_ntones(i), out.get_chan_data(i));
   }
 }
 

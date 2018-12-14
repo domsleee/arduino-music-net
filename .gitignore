@@ -2,6 +2,6 @@ generated
 out
 mid
 miditones
-extract
+extract/extract
 *.o
 
