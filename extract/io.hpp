@@ -4,4 +4,4 @@
 using namespace std;
 
 vector<byte> read_score(char *filename);
-void print_chan(string &filepath, int ntones, vector<byte> &data);
+void print_chan(string &filepath, int ntones, vector<p> &data);

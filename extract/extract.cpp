@@ -83,8 +83,8 @@ void tune_go(vector<byte> &score, int score_start, Out &out, int volume_present)
     dprintf("%#02x\n", cmd);
     if (cmd < 0x80) { /* wait count in msec. */
       dprintf("wait\n");
-      out.all(cmd);
-      out.all(score[score_cursor++]);
+      out.all(cmd, NORMAL_TYPE);
+      out.all(score[score_cursor++], NORMAL_TYPE);
     }
     opcode = cmd & 0xf0;
     chan = cmd & 0x0f;
@@ -93,13 +93,15 @@ void tune_go(vector<byte> &score, int score_start, Out &out, int volume_present)
     }
     else if (opcode == CMD_PLAYNOTE) { /* play note */
       dprintf("note\n");
-      note = score[score_cursor++]; // argument evaluation order is undefined in C!
-      if (volume_present) ++score_cursor; // ignore volume if present
       out.chan(chan, cmd);
-      out.chan(chan, note, true);
+      note = score[score_cursor++]; // argument evaluation order is undefined in C!
+      out.chan(chan, note, true, NORMAL_TYPE);
+      if (volume_present) out.chan(chan, score[score_cursor++], true, NORMAL_TYPE); // copy volume if present
     }
     else if (opcode == CMD_INSTRUMENT) { /* change a channel's instrument */
-      score_cursor++; // ignore it
+      out.chan(chan, cmd);
+      out.chan(chan, score[score_cursor++]);
+      //score_cursor++; // ignore it
     }
     else if (opcode == CMD_RESTART) { /* restart score */
       out.all(cmd);

@@ -5,21 +5,21 @@ Out::Out(vector<int> &tone_dist) {
   this->chans.resize(tone_dist.size());
 }
 
-void Out::all(byte b) {
+void Out::all(byte b, int type) {
   dprintf("all, push_back: %#02x\n", b);
-  for (vector<byte> &c: this->chans) {
-    c.push_back(b);
+  for (vector<p> &c: this->chans) {
+    c.push_back(p(b, type));
   }
 }
 
-void Out::chan(int chan, byte b, bool skip_processing) {
+void Out::chan(int chan, byte b, bool skip_processing, int type) {
   for (int i = 0; i < this->chans.size(); i++) {
     int v = this->tone_dist[i];
     if (chan < v) {
       // 0x0f is where the channel is.
       byte nb = skip_processing ? b : ((b & (~0x0F)) | chan);
       dprintf("chans[%d].push_back(%#02x -> %#02x) (? -> %d)\n", i, b, nb, chan);
-      this->chans[i].push_back(nb);
+      this->chans[i].push_back(p(nb, type));
       return;
     }
     chan -= v;
@@ -28,7 +28,7 @@ void Out::chan(int chan, byte b, bool skip_processing) {
   ERROR("FATAL: Attempt to output to channel: %d\n", chan);
 }
 
-vector<byte>& Out::get_chan_data(int chan) {
+vector<p>& Out::get_chan_data(int chan) {
   if (!(0 <= chan < chans.size())) {
     ERROR("FATAL: Attempt to access channel: %d in get_chan_data\n", chan);
   }
