@@ -1,9 +1,7 @@
-
-
-
-
-miditones: miditones-src/miditones.c
-	gcc -O2 -o miditones miditones-src/miditones.c 
+all:
+	(cd src/extract; make -j8)
+	(cd src/lib/miditones-src; make)
 
 clean:
-	rm -f miditones
+	(cd src/extract; make clean)
+	(cd src/lib/miditones-src; make clean)

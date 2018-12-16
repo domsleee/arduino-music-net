@@ -1,6 +1,6 @@
 [submodule "miditones-src"]
-	path = miditones-src
+	path = src/lib/miditones-src
 	url = https://github.com/LenShustek/miditones.git
 [submodule "playtune"]
-	path = playtune
+	path = src/lib/playtune
 	url = https://github.com/LenShustek/arduino-playtune.git

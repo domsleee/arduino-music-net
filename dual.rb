@@ -2,7 +2,11 @@
 require 'fileutils'
 exit 0 if ARGV.length < 1
 
-LIBS = ["./playtune/Playtune.cpp", "./playtune/Playtune.h", "./SquareSync.hpp", "./SquareSync.cpp"]
+
+EXTRACT_BIN = "./src/extract/extract"
+MIDITONES_BIN = "./src/lib/miditones-src/miditones"
+SOURCE_FOLDER = "./src/templates"
+LIBS = ["./src/lib/playtune/Playtune.cpp", "./src/lib/playtune/Playtune.h", "./src/SquareSync.hpp", "./src/SquareSync.cpp"]
 boards = {
     "a" => {"port" => "/dev/cu.usbserial-A9M9DV3R", "fqbn" => "arduino:avr:pro"},
     "b" => {"port" => "/dev/cu.usbmodem465", "fqbn" => "arduino:avr:micro" }
@@ -14,10 +18,9 @@ dirname = File.dirname file
 
 system "screen -S myscreeny -X kill" # kill running screen, to free up tty
 system "screen -S myscreenx -X kill" # kill running screen, to free up tty
-system "./miditones -t7 -v -pt -pi -d -i -b \"#{dirname}/#{basename}\""
+system "#{MIDITONES_BIN} -t7 -v -pt -pi -d -i -b \"#{dirname}/#{basename}\""
 bin_file = "#{dirname}/#{basename}.bin"
-system "./extract/extract \"#{bin_file}\" /tmp/#{basename}_a.c 3 /tmp/#{basename}_b.c 4"
-#print "./extract/extract \"#{bin_file}\" /tmp/#{basename}_a.c 3 /tmp/#{basename}_b.c 4"
+system "#{EXTRACT_BIN} \"#{bin_file}\" /tmp/#{basename}_a.c 3 /tmp/#{basename}_b.c 4"
 
 
 for v in ["a", "b"]
@@ -31,7 +34,7 @@ for v in ["a", "b"]
         FileUtils::cp(lib, "#{sketch_folder}/")
     end
 
-    source = File.read "./source_#{v}.cpp"
+    source = File.read "#{SOURCE_FOLDER}/source_#{v}.cpp"
     melody = File.read "/tmp/#{basename}_#{v}.c"
     source['!!MELODY!!'] = melody
     File.open("#{sketch_folder}/#{basename}_#{v}.ino", "w") { |io|
