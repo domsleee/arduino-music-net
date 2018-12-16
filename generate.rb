@@ -40,7 +40,7 @@ for v in ["a", "b"]
 
     # now upload
     print "Compiling...\n"
-    system "arduino compile -b \"#{fqbn}\" #{sketch_folder} >/dev/null"
+    system "arduino compile -b \"#{fqbn}\" #{sketch_folder} --build-properties build.f_cpu=16000000L"
     print "Uploading...\n"
     system "arduino upload -b \"#{fqbn}\" -p #{port} #{sketch_folder}"
 end

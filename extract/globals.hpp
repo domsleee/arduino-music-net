@@ -6,7 +6,7 @@ using namespace std;
 #define NORMAL_TYPE 1
 typedef unsigned char byte;
 
-#define DEBUG
+//#define DEBUG
 
 #ifdef DEBUG
 #define dprintf(...) printf(__VA_ARGS__)

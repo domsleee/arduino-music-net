@@ -85,6 +85,7 @@ void tune_go(vector<byte> &score, int score_start, Out &out, int volume_present)
       dprintf("wait\n");
       out.all(cmd, NORMAL_TYPE);
       out.all(score[score_cursor++], NORMAL_TYPE);
+      continue;
     }
     opcode = cmd & 0xf0;
     chan = cmd & 0x0f;
@@ -114,7 +115,7 @@ void tune_go(vector<byte> &score, int score_start, Out &out, int volume_present)
       break;
     }
     else {
-      //printf("um!\n");
+      printf("bad command opcode! %#02x\n", opcode);
     }
   }
 }
