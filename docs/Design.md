@@ -1,16 +1,17 @@
 # Design Doc
 Here is information about the design of the program
 
-- [x] Preprocessing
+Preprocessing
 - [x] 1. split tracks across arduinos
-
-- [ ] Runtime
+ 
+Runtime
 - [x] 1. establish connection with req/ack
 - [ ] 2. constantly sync
 
-TODO
+Build system
 - [ ] Merge dual and generate scripts.
-- [ ] Improve script to reflect this document. 
+- [ ] Improve script to reflect this document.
+
 
 
 ### Runtime continual sync
