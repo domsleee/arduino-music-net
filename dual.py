@@ -10,32 +10,48 @@ import subprocess # syscall
 def rel_dir(s):
     dirname = os.path.dirname(__file__)
     return os.path.join(dirname, s)
-
-Board = namedtuple('Board', 'name port fqbn template')
 EXTRACT_BIN = rel_dir('./src/extract/extract')
 MIDITONES_BIN = rel_dir('./src/lib/miditones-src/miditones')
-SOURCE_FOLDER = rel_dir('./src/templates')
+TEMPLATE_FOLDER = rel_dir('./src/templates')
 LIBS = ['./src/lib/playtune/Playtune.cpp', './src/lib/playtune/Playtune.h', './src/Sync.hpp', './src/Sync_const.cpp', './src/Sync_init.cpp']
-boards = [
-    Board(name='a', port='/dev/cu.usbserial-A9M9DV3R', fqbn='arduino:avr:pro', template='master.cpp'),
-    Board(name='b', port='/dev/cu.usbmodem465', fqbn='arduino:avr:micro', template='slave.cpp')
-]
+
+Board = namedtuple('Board', 'name port fqbn template tones')
+class Dir:
+    def __init__(self, board: Board, basename: str):
+        fname = f'{basename}_{board.name}'
+        self.sketch_folder = rel_dir(f'./out/{fname}')
+        self.melody_file = f'/tmp/{fname}.c'
+        self.arduino_file = f'{self.sketch_folder}/{fname}.ino'
+        self.template_file = f'{TEMPLATE_FOLDER}/{board.template}'
+        self.compile_cmd = f'arduino compile -b "{board.fqbn}" "{self.sketch_folder}"'
+        self.upload_cmd = f'arduino upload -b "{board.fqbn}" -p {board.port} "{self.sketch_folder}"'
+        self.extract_args = [self.melody_file, str(board.tones)]
+
+configs = {
+    'default': [
+        Board(name='a', port='/dev/cu.usbserial-A9M9DV3R', fqbn='arduino:avr:pro', template='master.cpp', tones=3),
+        Board(name='b', port='/dev/cu.usbmodem465', fqbn='arduino:avr:micro', template='slave.cpp', tones=4)
+    ],
+    'test': [
+        Board(name='a', port='/dev/cu.usbserial-A9M9DV3R', fqbn='arduino:avr:pro', template='master.cpp', tones=1),
+        Board(name='b', port='/dev/cu.usbmodem490', fqbn='arduino:avr:micro', template='slave.cpp', tones=1)
+    ]
+}
 
 def main(args):
     kill_screen_sessions()
+    boards = configs[args.config]
     basefile = rel_dir(os.path.splitext(args.file)[0])
-    syscall(f'{MIDITONES_BIN} -t6 -v -pt -pi -d -i -b "{basefile}"')
+    syscall(f'{MIDITONES_BIN} -t{num_tones(boards)} -v -pt -pi -d -i -b "{basefile}"')
     basename = basefile.split('/')[-1]
-    # todo - this command should reflect `boards`.
-    syscall(f'{EXTRACT_BIN} "{basefile}.bin" "/tmp/{basename}_a.c" 3 "/tmp/{basename}_b.c" 4')
+    split_tracks(basefile, basename, boards)
 
     if args.command == 'compile':
-        compile(basename)
+        compile(boards, basename)
     elif args.command == 'upload':
-        compile(basename)
-        upload(basename)
+        compile(boards, basename)
+        upload(boards, basename)
     os.remove(f'{basefile}.bin')
-
 
 def header(s):
     z = '='*64
@@ -45,9 +61,11 @@ def header(s):
 def syscall(s, failable=False, quiet=False):
     if not quiet:
         print(f'SYSCALL: {s}')
-    quiet_str = '>/dev/null' if quiet else ''
     fun = subprocess.call if failable else subprocess.check_call
-    fun(f'{s} {quiet_str}', shell=True)
+    if quiet:
+        fun(s, stdout=open(os.devnull, 'w'), shell=True)
+    else:
+        fun(s, shell=True)
 
 
 def kill_screen_sessions():
@@ -55,37 +73,52 @@ def kill_screen_sessions():
     syscall('screen -S myscreenx -X kill', failable=True, quiet=True)
 
 
-def compile(basename):
+def num_tones(boards):
+    tones = 0
+    for b in boards:
+        tones += b.tones
+    return tones
+
+
+def split_tracks(basefile, basename, boards):
+    """ Split tracks using extract program """
+    a = [EXTRACT_BIN, f'{basefile}.bin']
+    for b in boards:
+        d = Dir(b, basename)
+        a += d.extract_args
+    syscall(' '.join([f'"{x}"' for x in a]))
+
+
+def compile(boards, basename):
     print(header('Compiling for all boards!'))
     for b in boards:
         print(f'template: {b.template}, port: {b.port}, fqbn: {b.fqbn}')
-        fname = f'{basename}_{b.name}'
-        sketch_folder = rel_dir(f'./out/{fname}')
-        pathlib.Path(sketch_folder).mkdir(parents=True, exist_ok=True)
+        d = Dir(b, basename)
+        pathlib.Path(d.sketch_folder).mkdir(parents=True, exist_ok=True)
         for lib in LIBS:
-            shutil.copy(lib, f'{sketch_folder}/')
+            shutil.copy(lib, f'{d.sketch_folder}/')
 
         repl = {
-            'MELODY': open(f'/tmp/{fname}.c').read()
+            'MELODY': open(d.melody_file).read()
         }
-        src = Template(open(rel_dir(f'./src/templates/{b.template}')).read())
-        with open(f'{sketch_folder}/{fname}.ino', 'w') as fout:
+        src = Template(open(d.template_file).read())
+        with open(d.arduino_file, 'w') as fout:
             fout.write(src.safe_substitute(repl))
-        os.remove(f'/tmp/{fname}.c')
-        syscall(f'arduino compile -b "{b.fqbn}" "{sketch_folder}"')
+        os.remove(d.melody_file)
+        syscall(d.compile_cmd)
 
 
-def upload(basename):
+def upload(boards, basename):
     print(header('Uploading for all boards!'))
     for b in boards:
+        d = Dir(b, basename)
         print("Uploading...")
-        fname = f'{basename}_{b.name}'
-        sketch_folder = rel_dir(f'./out/{fname}')
-        syscall(f'arduino upload -b "{fqbn}" -p {port} "{sketch_folder}"')
+        syscall(d.upload_cmd)
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser('Compile/upload to arduino')
     parser.add_argument('command', help='either just compile or compile and then upload', choices=['compile', 'upload'])
     parser.add_argument('file', help='midi file (in the format .midi)')
+    parser.add_argument('--config', '-c', help='board configuration', choices=configs.keys(), default='default')
     main(parser.parse_args())

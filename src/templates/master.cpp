@@ -14,7 +14,7 @@
 
 
 #include "Playtune.h"
-#include "SquareSync.hpp"
+#include "Sync.hpp"
 
 #define PIN_IN  3
 #define PIN_OUT 12
@@ -24,7 +24,7 @@ typedef unsigned int uint;
 $MELODY
 
 Playtune pt;
-SquareSync s(PIN_IN, PIN_OUT, pt);
+Sync s(PIN_IN, PIN_OUT, pt, MASTER);
 
 
 void setup() {
@@ -38,7 +38,7 @@ void setup() {
 }
 
 void loop() {
-  s.sync_master();
+  s.sync_init();
   //while (true); //shutup
   pt.tune_playscore (score);
   while (pt.tune_playing);

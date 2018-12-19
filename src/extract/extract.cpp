@@ -101,7 +101,7 @@ void tune_go(vector<byte> &score, int score_start, Out &out, int volume_present)
     }
     else if (opcode == CMD_INSTRUMENT) { /* change a channel's instrument */
       out.chan(chan, cmd);
-      out.chan(chan, score[score_cursor++]);
+      out.chan(chan, score[score_cursor++], true, NORMAL_TYPE);
       //score_cursor++; // ignore it
     }
     else if (opcode == CMD_RESTART) { /* restart score */

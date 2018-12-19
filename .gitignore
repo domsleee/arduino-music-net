@@ -5,5 +5,6 @@ miditones
 extract/extract
 *.o
 README.pdf
-
+.mypy_cache
+*.bin
 
