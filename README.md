@@ -11,16 +11,17 @@ Arduino Music
 Connect the PIN_IN of the master to the PIN_OUT of the slave and vice-versa.
 
 ## Generating a sketch
-Modify `dual.rb` to suit your needs. Namely, use `arduino boards list` to find the fbqn and serial ports that your arduinos are using, and enter these in `dual.rb`. Then, use the following command to upload the sketch to your boards:
+Modify `generate.py` to suit your needs. Namely, use `arduino boards list` to find the fbqn and serial ports that your arduinos are using, and enter these in `config` in `generate.py`. Then, use the following command to upload the sketch to your boards (default is two boards):
 
 ~~~bash
-./dual.rb <input>
+./generate.py upload <midi_input>
 ~~~
 
-where `<input>` is an midi file.
+where `<midi_input>` is an midi file (in the format *.mid).
 
+You can also upload to a single board using the standalone config (`-c standalone`).
 
-## Installing `arduino-cli` for use with `dual.rb` and `generate.rb`
+## Installing `arduino-cli` for use with `generate.py`
 Install [arduino-cli](https://github.com/arduino/arduino-cli). Follow the instructions provided by them, tldr:
 
 ~~~bash
@@ -34,6 +35,10 @@ I aliased `arduino-cli` as `arduino`, to use the scripts you must do this:
 cp arduino-cli /usr/local/bin/arduino
 ~~~
 
-## Uses libraries from LenShustek
+
+## Acknowledgements
+Based on [shvelo/arduino-music](https://github.com/shvelo/arduino-music)
+
+### Libraries from SHuste
 PlayTune from https://github.com/LenShustek/arduino-playtune   
 MidiTones from https://github.com/LenShustek/miditones
