@@ -12,11 +12,9 @@
 
 #include "Playtune.h"
 
-!!MELODY!!
+$MELODY
 
 Playtune pt;
-
-int val;
 
 void setup() {
   // Enable pins

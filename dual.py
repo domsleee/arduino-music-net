@@ -15,7 +15,7 @@ MIDITONES_BIN = rel_dir('./src/lib/miditones-src/miditones')
 TEMPLATE_FOLDER = rel_dir('./src/templates')
 LIBS = ['./src/lib/playtune/Playtune.cpp', './src/lib/playtune/Playtune.h', './src/Sync.hpp', './src/Sync_const.cpp', './src/Sync_init.cpp']
 
-Board = namedtuple('Board', 'name port fqbn template tones')
+Board = namedtuple('Board', 'name port fqbn template tones freq')
 class Dir:
     def __init__(self, board: Board, basename: str):
         fname = f'{basename}_{board.name}'
@@ -23,18 +23,21 @@ class Dir:
         self.melody_file = f'/tmp/{fname}.c'
         self.arduino_file = f'{self.sketch_folder}/{fname}.ino'
         self.template_file = f'{TEMPLATE_FOLDER}/{board.template}'
-        self.compile_cmd = f'arduino compile -b "{board.fqbn}" "{self.sketch_folder}"'
+        self.compile_cmd = f'arduino compile -b "{board.fqbn}" "{self.sketch_folder}" --build-properties build.f_cpu={board.freq}000000L'
         self.upload_cmd = f'arduino upload -b "{board.fqbn}" -p {board.port} "{self.sketch_folder}"'
         self.extract_args = [self.melody_file, str(board.tones)]
 
 configs = {
     'default': [
-        Board(name='a', port='/dev/cu.usbserial-A9M9DV3R', fqbn='arduino:avr:pro', template='master.cpp', tones=3),
-        Board(name='b', port='/dev/cu.usbmodem465', fqbn='arduino:avr:micro', template='slave.cpp', tones=4)
+        Board(name='a', port='/dev/cu.usbserial-A9M9DV3R', fqbn='arduino:avr:pro', template='master.cpp', tones=3, freq=16),
+        Board(name='b', port='/dev/cu.usbmodem465', fqbn='arduino:avr:micro', template='slave.cpp', tones=4, freq=16)
+    ],
+    'standalone': [
+        Board(name='a', port='/dev/cu.usbserial-A9M9DV3R', fqbn='arduino:avr:pro', template='standalone.cpp', tones=8, freq=16)
     ],
     'test': [
-        Board(name='a', port='/dev/cu.usbserial-A9M9DV3R', fqbn='arduino:avr:pro', template='master.cpp', tones=1),
-        Board(name='b', port='/dev/cu.usbmodem490', fqbn='arduino:avr:micro', template='slave.cpp', tones=1)
+        Board(name='a', port='/dev/cu.usbserial-A9M9DV3R', fqbn='arduino:avr:pro', template='master.cpp', tones=1, freq=16),
+        Board(name='b', port='/dev/cu.usbmodem492', fqbn='arduino:avr:micro', template='slave.cpp', tones=1, freq=16)
     ]
 }
 
@@ -52,6 +55,7 @@ def main(args):
         compile(boards, basename)
         upload(boards, basename)
     os.remove(f'{basefile}.bin')
+
 
 def header(s):
     z = '='*64
