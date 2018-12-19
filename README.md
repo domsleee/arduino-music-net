@@ -39,6 +39,6 @@ cp arduino-cli /usr/local/bin/arduino
 ## Acknowledgements
 Based on [shvelo/arduino-music](https://github.com/shvelo/arduino-music)
 
-### Libraries from SHuste
+### Libraries from LenShustek
 PlayTune from https://github.com/LenShustek/arduino-playtune   
 MidiTones from https://github.com/LenShustek/miditones
