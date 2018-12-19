@@ -29,14 +29,14 @@ void Out::chan(int chan, byte b, bool skip_processing, int type) {
 }
 
 vector<p>& Out::get_chan_data(int chan) {
-  if (!(0 <= chan < chans.size())) {
+  if (!(0 <= chan && chan < (int)chans.size())) {
     ERROR("FATAL: Attempt to access channel: %d in get_chan_data\n", chan);
   }
   return this->chans[chan];
 }
 
 int Out::get_chan_ntones(int chan) {
-  if (!(0 <= chan < chans.size())) {
+  if (!(0 <= chan && chan < (int)chans.size())) {
     printf("FATAL: Attempt to access channel: %d in get_chan_ntones\n", chan);
     exit(1);
   }

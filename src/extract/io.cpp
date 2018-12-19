@@ -1,7 +1,6 @@
 #include "io.hpp"
 #include <iomanip>
 
-
 vector<byte> read_score(char *filename) {
   ifstream fin(filename, ios::binary);
   if (!fin) {
@@ -29,7 +28,7 @@ void print_chan(string &filepath, int ntones, vector<p> &data) {
     if (i < data.size()-1) {
       fout << ',';
     }
-    if (i % 10 == 0) fout << '\n';
+    if (i % 25 == 0) fout << '\n';
   }
   fout << "};\n";
 }
