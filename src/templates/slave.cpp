@@ -1,7 +1,7 @@
 //**************************************************
 //
 // Arduino UNO Music Player
-// Run on server (UNO)
+// Run on client (leonardo/micro)
 //
 // Dom Slee, 2018
 //
@@ -16,30 +16,32 @@
 #include "Playtune.h"
 #include "SquareSync.hpp"
 
-#define PIN_IN  3
-#define PIN_OUT 12
+#define PIN_IN  9
+#define PIN_OUT 14
 #define DELAY_MS 10
+
 typedef unsigned int uint;
 
-!!MELODY!!
+$MELODY
 
 Playtune pt;
 SquareSync s(PIN_IN, PIN_OUT, pt);
 
-
 void setup() {
   Serial.begin(9600);
-  Serial.write("!");
 
   // Enable pins
+  pt.tune_initchan(4);
   pt.tune_initchan(5);
   pt.tune_initchan(6);
   pt.tune_initchan(7);
 }
 
 void loop() {
-  s.sync_master();
+  s.sync_slave();
   //while (true); //shutup
-  pt.tune_playscore (score);
-  while (pt.tune_playing);
+  pt.tune_playscore(score);  /* start playing */
+  while (pt.tune_playing) ;   /* wait here until playing stops */
+  pt.tune_delay(100);
 }
+
